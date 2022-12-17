@@ -98,7 +98,7 @@ const RecipePage = (props: RecipePageProps) => {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    instruction: "hello",
+                    instruction: newItem,
                 }),
             }
         ).catch((err) => console.log("Error:", err));
