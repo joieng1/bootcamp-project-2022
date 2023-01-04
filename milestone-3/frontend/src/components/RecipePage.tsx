@@ -2,12 +2,7 @@ import "./RecipePage.css";
 import { useParams } from "react-router-dom";
 
 //only for utilizing the first object of recipeData which displays error if recipe does not exist
-import errorRecipe from "../recipeData.json";
 import React, { useEffect, ChangeEvent, useState } from "react";
-
-interface RecipePageProps {
-    external?: boolean;
-}
 
 interface Recipe {
     link_name?: string;
@@ -18,57 +13,23 @@ interface Recipe {
     instructions: string[];
 }
 
-const RecipePage = (props: RecipePageProps) => {
-    const { id } = useParams();
-    const [externalRecipes, setExternalRecipes] = useState<Recipe[]>([]);
-    const [recipe, setRecipe] = useState<Recipe>(errorRecipe[0]);
-
-    // for rendering specfic recipe
-    useEffect(() => {
-        if (props.external) {
-            console.log("External url");
-            // make an API call with the url param & setRecipe
-            fetch("https://bootcamp-milestone-4.onrender.com/recipe")
-                .then((res) => res.json())
-                .then((data) => {
-                    setExternalRecipes(data);
-                    return data;
-                })
-                .then((data) => {
-                    let i = data.findIndex(
-                        (r: Recipe) =>
-                            r.name.toLowerCase().replace(/[^a-z0-9]/gi, "") ===
-                            id
-                    );
-                    setRecipe(data[i]);
-                });
-        } else {
-            // fetch from my API
-            fetch(`https://myrecipes-backend.onrender.com/recipe/${id}`)
-                .then((res) => res.json())
-                .then((data) => {
-                    console.log(data);
-                    setRecipe(data);
-                });
-        }
-    }, [id, props.external]);
-
+const RecipePage = (props: Recipe) => {
     const [newIngredient, setNewIngredient] = useState<string>("");
     // State variable stores ingredient data as initial state
     const [allIngredients, setAllIngredients] = useState<string[]>(
-        recipe.ingredients
+        props.ingredients
     );
 
     const [newInstruction, setNewInstruction] = useState<string>("");
     // State variable stores instruction data as initial state
     const [allInstructions, setAllInstrutctions] = useState<string[]>(
-        recipe.ingredients
+        props.ingredients
     );
 
     useEffect(() => {
-        setAllIngredients(recipe.ingredients);
-        setAllInstrutctions(recipe.instructions);
-    }, [recipe]);
+        setAllIngredients(props.ingredients);
+        setAllInstrutctions(props.instructions);
+    }, [props]);
 
     function addIngredient(newItem: string) {
         // update local ingredient
@@ -76,7 +37,9 @@ const RecipePage = (props: RecipePageProps) => {
 
         //update database
         fetch(
-            `https://myrecipes-backend.onrender.com/recipe/${recipe.link_name}/ingredient`,
+            `https://myrecipes-backend.onrender.com/recipe/${props.name
+                .toLowerCase()
+                .replace(/[^a-z0-9]/gi, "")}/ingredient`,
             {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
@@ -93,7 +56,9 @@ const RecipePage = (props: RecipePageProps) => {
 
         //update database
         fetch(
-            `https://myrecipes-backend.onrender.com/recipe/${recipe.link_name}/instruction`,
+            `https://myrecipes-backend.onrender.com/recipe/${props.name
+                .toLowerCase()
+                .replace(/[^a-z0-9]/gi, "")}/instruction`,
             {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
@@ -107,12 +72,12 @@ const RecipePage = (props: RecipePageProps) => {
     return (
         <main>
             <div className="recipe-container">
-                <h1 className="title-color text-center">{recipe.name}</h1>
-                <p className="recipe-disc small-font">{recipe.description}</p>
+                <h1 className="title-color text-center">{props.name}</h1>
+                <p className="recipe-disc small-font">{props.description}</p>
                 <div className="flex-container">
                     <img
                         className="recipe-img"
-                        src={recipe.image}
+                        src={props.image}
                         height="300"
                         width="300"
                     />

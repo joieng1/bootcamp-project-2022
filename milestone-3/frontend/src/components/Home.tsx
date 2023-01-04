@@ -24,7 +24,6 @@ function Home() {
             .then((res) => res.json())
             .then((data) => {
                 setMyRecipes(data);
-                console.log(data);
             });
     }, []);
     return (
